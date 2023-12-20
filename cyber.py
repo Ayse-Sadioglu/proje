@@ -120,6 +120,11 @@ def print_intro():
 
         *****Welcome to the File Encryption and Decryption Tool*****
 
+
+        This command-line tool employs symmetric key encryption with salting for secure file operations.
+        Utilizing the Advanced Encryption Standard (AES) algorithm in Cipher Block Chaining (CBC)
+        mode and the Python Crypto library,the program ensures robust file security. 
+
     """
 
     print(intro)
@@ -156,21 +161,39 @@ def print_exit():
 
 def Main():
     print_intro()
-    choice = input("Would you like to (E)encrypt or (D)Decrypt ")
-    if choice=='exit':
-        print_exit()
+    while True:
+        choice = input("Would you like to (E)encrypt or (D)Decrypt ")
+        if choice.lower() == 'exit':
+            print_exit()
+            break
+        elif choice.upper() in ['E', 'D']:
+            break
+        else:
+            print("Invalid choice. Please enter 'E' for encryption, 'D' for decryption, or 'exit' to quit.")
+
     if choice == 'E':
         filename = input("File to encrypt: ")
-        key = input("Key: ")
+        while True:
+            key = input("Key: ")
+            if key:
+                break
+            else:
+                print("Key cannot be empty. Please provide a valid key.")
+
         output_path = input("Enter the path to save the encrypted file: ")
         encrypt(getKey(key), filename, output_path)
     elif choice == 'D':
         filename = input("File to decrypt: ")
-        key = input("Key: ")
+        while True:
+            key = input("Key: ")
+            if key:
+                break
+            else:
+                print("Key cannot be empty. Please provide a valid key.")
+
         output_path = input("Enter the path to save the decrypted file: ")
         decrypt(getKey(key), filename, output_path)
-        
-    
 
 if __name__ == "__main__":
     Main()
+
