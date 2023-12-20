@@ -128,43 +128,13 @@ def print_intro():
     """
 
     print(intro)
-def print_exit():
-    exit = """
-                         .-.
-                        |_:_|
-                       /(_Y_)\\
-.                     ( \\/M\\/ )
- '.                 _.'-/'-\\'._ 
-   ':             _/.--'[[[[]'--.\\_
-     ':          /_'  : |::"| :  '.\\
-       ':       //   ./ |oUU| \\'  :\\
-         ':    _:'..' \\_|___|_/ :   :|
-           ':.  .'  |_[___]_|  :.':\\
-            [::\\ |  :  | |  :   ; : \\
-             '-'   \\/'.| |.' \\  .;.' |
-             |\\_    \\ '-'   :       |
-             |  \\    \\ .:    :   |   |
-             |   \\    | '.   :    \\  |
-            /       \\   :. .;       |
-           /     |   |  :__/     :  \\
-          |  |   |    \\:   | \\   |   ||
-         /    \\  : :  |:   /  |__|   /|
-         |     : : :_/_|  /'._\\  '--|_\\
-          /___.-/_|-'   \\  \\
-                         '-'
-
-        --------  See you!  --------
-
-    """
-
-    print(exit)
 
 def Main():
     print_intro()
     while True:
         choice = input("Would you like to (E)encrypt or (D)Decrypt ")
         if choice.lower() == 'exit':
-            print_exit()
+            print('exiting..')
             break
         elif choice.upper() in ['E', 'D']:
             break
