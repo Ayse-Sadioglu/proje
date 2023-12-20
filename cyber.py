@@ -111,30 +111,125 @@ def getKey(password, salt, iterations=100000):
     key = PBKDF2(password.encode('utf-8'), salt, dkLen=32, count=iterations)
     return key
 
+def print_intro():
+    intro = """
+                         .-.
+                        |_:_|
+                       /(_Y_)\\
+.                     ( \\/M\\/ )
+ '.                 _.'-/'-\\'._ 
+   ':             _/.--'[[[[]'--.\\_
+     ':          /_'  : |::"| :  '.\\
+       ':       //   ./ |oUU| \\'  :\\
+         ':    _:'..' \\_|___|_/ :   :|
+           ':.  .'  |_[___]_|  :.':\\
+            [::\\ |  :  | |  :   ; : \\
+             '-'   \\/'.| |.' \\  .;.' |
+             |\\_    \\ '-'   :       |
+             |  \\    \\ .:    :   |   |
+             |   \\    | '.   :    \\  |
+            /       \\   :. .;       |
+           /     |   |  :__/     :  \\
+          |  |   |    \\:   | \\   |   ||
+         /    \\  : :  |:   /  |__|   /|
+         |     : : :_/_|  /'._\\  '--|_\\
+          /___.-/_|-'   \\  \\
+                         '-'
+
+        *****Welcome to the File Encryption and Decryption Tool*****
+
+    """
+
+    print(intro)
+def print_exit():
+    exit = """
+                         .-.
+                        |_:_|
+                       /(_Y_)\\
+.                     ( \\/M\\/ )
+ '.                 _.'-/'-\\'._ 
+   ':             _/.--'[[[[]'--.\\_
+     ':          /_'  : |::"| :  '.\\
+       ':       //   ./ |oUU| \\'  :\\
+         ':    _:'..' \\_|___|_/ :   :|
+           ':.  .'  |_[___]_|  :.':\\
+            [::\\ |  :  | |  :   ; : \\
+             '-'   \\/'.| |.' \\  .;.' |
+             |\\_    \\ '-'   :       |
+             |  \\    \\ .:    :   |   |
+             |   \\    | '.   :    \\  |
+            /       \\   :. .;       |
+           /     |   |  :__/     :  \\
+          |  |   |    \\:   | \\   |   ||
+         /    \\  : :  |:   /  |__|   /|
+         |     : : :_/_|  /'._\\  '--|_\\
+          /___.-/_|-'   \\  \\
+                         '-'
+
+        --------  See you!  --------
+
+    """
+
+    print(exit)
+
+
 
 def Main():
-    choice = input("Would you like to (E)encrypt or (D)Decrypt ")
+    print_intro()
 
-    if choice == 'E':
-        filename = input("File to encrypt: ")
-        password = input("Key: ")
-        while not password:
-            print("Password cannot be empty.")
+    while True:
+        choice = input("Would you like to (E)encrypt or (D)Decrypt: ").lower()
+
+        if choice == 'e':
+            filename = input("File to encrypt: ")
+            if filename.lower() == 'exit':
+                print_exit()
+                print("Exiting the program.")
+                break
+
             password = input("Key: ")
+            while not password:
+                print("Password cannot be empty.")
+                password = input("Key: ")
 
-        output_path = input("Enter the path to save the encrypted file: ")
-        encrypt(password, filename, output_path)
-    elif choice == 'D':
-        filename = input("File to decrypt: ")
-        password = input("Key: ")
-        while not password:
-            print("Password cannot be empty.")
+            key = getKey(password)
+            output_path = input("Enter the path to save the encrypted file: ")
+            if output_path.lower() == 'exit':
+                print_exit()
+                print("Exiting the program.")
+                break
+
+            encrypt(key, filename, output_path)
+
+        elif choice == 'd':
+            filename = input("File to decrypt: ")
+            if filename.lower() == 'exit':
+                print_exit()
+                print("Exiting the program.")
+                break
+
             password = input("Key: ")
+            while not password:
+                print("Password cannot be empty.")
+                password = input("Key: ")
 
-        output_path = input("Enter the path to save the decrypted file: ")
-        decrypt(password, filename, output_path)
-    else:
-        print("No option selected, closing...")
+            key = getKey(password)
+            output_path = input("Enter the path to save the decrypted file: ")
+            if output_path.lower() == 'exit':
+                print_exit()
+                print("Exiting the program.")
+                break
+
+            decrypt(key, filename, output_path)
+
+        elif choice == 'exit':
+            print_exit()
+            print("Exiting the program.")
+            break
+
+        else:
+            print("Invalid option. Please enter 'E' for encryption, 'D' for decryption, or 'exit' to quit.")
 
 if __name__ == "__main__":
     Main()
+
