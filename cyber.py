@@ -90,10 +90,72 @@ def decrypt(key, filename, output_path):
 def getKey(password):
     hasher = SHA256.new(password.encode('utf-8'))
     return hasher.digest()
+def print_intro():
+    intro = """
+                         .-.
+                        |_:_|
+                       /(_Y_)\\
+.                     ( \\/M\\/ )
+ '.                 _.'-/'-\\'._ 
+   ':             _/.--'[[[[]'--.\\_
+     ':          /_'  : |::"| :  '.\\
+       ':       //   ./ |oUU| \\'  :\\
+         ':    _:'..' \\_|___|_/ :   :|
+           ':.  .'  |_[___]_|  :.':\\
+            [::\\ |  :  | |  :   ; : \\
+             '-'   \\/'.| |.' \\  .;.' |
+             |\\_    \\ '-'   :       |
+             |  \\    \\ .:    :   |   |
+             |   \\    | '.   :    \\  |
+            /       \\   :. .;       |
+           /     |   |  :__/     :  \\
+          |  |   |    \\:   | \\   |   ||
+         /    \\  : :  |:   /  |__|   /|
+         |     : : :_/_|  /'._\\  '--|_\\
+          /___.-/_|-'   \\  \\
+                         '-'
+
+        *****Welcome to the File Encryption and Decryption Tool*****
+
+    """
+
+    print(intro)
+def print_exit():
+    exit = """
+                         .-.
+                        |_:_|
+                       /(_Y_)\\
+.                     ( \\/M\\/ )
+ '.                 _.'-/'-\\'._ 
+   ':             _/.--'[[[[]'--.\\_
+     ':          /_'  : |::"| :  '.\\
+       ':       //   ./ |oUU| \\'  :\\
+         ':    _:'..' \\_|___|_/ :   :|
+           ':.  .'  |_[___]_|  :.':\\
+            [::\\ |  :  | |  :   ; : \\
+             '-'   \\/'.| |.' \\  .;.' |
+             |\\_    \\ '-'   :       |
+             |  \\    \\ .:    :   |   |
+             |   \\    | '.   :    \\  |
+            /       \\   :. .;       |
+           /     |   |  :__/     :  \\
+          |  |   |    \\:   | \\   |   ||
+         /    \\  : :  |:   /  |__|   /|
+         |     : : :_/_|  /'._\\  '--|_\\
+          /___.-/_|-'   \\  \\
+                         '-'
+
+        --------  See you!  --------
+
+    """
+
+    print(exit)
 
 def Main():
+    print_intro()
     choice = input("Would you like to (E)encrypt or (D)Decrypt ")
-
+    if choice=='exit':
+        print_exit()
     if choice == 'E':
         filename = input("File to encrypt: ")
         key = input("Key: ")
@@ -105,8 +167,7 @@ def Main():
         output_path = input("Enter the path to save the decrypted file: ")
         decrypt(getKey(key), filename, output_path)
         
-    else:
-        print("No option selected, closing...")
+    
 
 if __name__ == "__main__":
     Main()
