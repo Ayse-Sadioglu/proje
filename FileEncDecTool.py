@@ -40,7 +40,7 @@ def encrypt(key, filename, output_path):
     hash_file_path = os.path.join(output_path, "enc_" + os.path.basename(filename) + ".hash")
     with open(hash_file_path, 'w') as hash_file:
         hash_file.write(hash_obj.hexdigest())
-
+    print('Encryption Completed')
 def decrypt(key, filename, output_path):
     chunksize = 64 * 1024
     original_filename = os.path.basename(filename)[4:]  # Remove the "(enc)" prefix
@@ -89,7 +89,7 @@ def decrypt(key, filename, output_path):
                 outfile.write(decryptor.decrypt(chunk))
 
             outfile.truncate(filesize)
-
+    print('Decryption Completed')
 def getKey(password, salt=b''):
     hasher = SHA256.new(salt + password.encode('utf-8'))
     return hasher.digest()
