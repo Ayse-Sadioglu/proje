@@ -2,6 +2,8 @@ import os
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto import Random
+from Crypto.Protocol.KDF import PBKDF2
+
 
 def encrypt(key, filename, output_path):
     chunksize = 64 * 1024
@@ -87,24 +89,34 @@ def decrypt(key, filename, output_path):
 
             outfile.truncate(filesize)
 
-def getKey(password):
-    hasher = SHA256.new(password.encode('utf-8'))
-    return hasher.digest()
+def getKey(password, salt=b'salt', iterations=100000):
+    key = PBKDF2(password.encode('utf-8'), salt, dkLen=32, count=iterations)
+    return key
+
 
 def Main():
     choice = input("Would you like to (E)encrypt or (D)Decrypt ")
 
     if choice == 'E':
         filename = input("File to encrypt: ")
-        key = input("Key: ")
+        password = input("Key: ")
+        while not password:
+            print("Password cannot be empty.")
+            password = input("Key: ")
+
+        key = getKey(password)
         output_path = input("Enter the path to save the encrypted file: ")
-        encrypt(getKey(key), filename, output_path)
+        encrypt(key, filename, output_path)
     elif choice == 'D':
         filename = input("File to decrypt: ")
-        key = input("Key: ")
+        password = input("Key: ")
+        while not password:
+            print("Password cannot be empty.")
+            password = input("Key: ")
+
+        key = getKey(password)
         output_path = input("Enter the path to save the decrypted file: ")
-        decrypt(getKey(key), filename, output_path)
-        
+        decrypt(key, filename, output_path)
     else:
         print("No option selected, closing...")
 
