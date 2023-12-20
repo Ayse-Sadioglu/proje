@@ -51,7 +51,7 @@ def encrypt(password, filename, output_path):
         salt_file.write(salt)
 
 
-def decrypt(password, filename, output_path, salt):
+def decrypt(password, filename, output_path):
     chunksize = 64 * 1024
     original_filename = os.path.basename(filename)[4:]  # Remove the "(enc)" prefix
     outputFile = os.path.join(output_path, "dec_" + original_filename.strip())  # Prepend "dec_"
@@ -68,20 +68,6 @@ def decrypt(password, filename, output_path, salt):
     with open(hash_file_path, 'r') as hash_file:
         stored_hash = hash_file.read().strip()
 
-    # Calculate the hash of the ciphertext before decryption
-    hash_obj = SHA256.new()
-    with open(filename, 'rb') as encrypted_file:
-        while True:
-            chunk = encrypted_file.read(chunksize)
-            if not chunk:
-                break
-            hash_obj.update(chunk)
-
-    # Compare the calculated hash with the stored hash
-    integrity_hash = hash_obj.hexdigest()
-    if integrity_hash != stored_hash:
-        print("Integrity check failed. The encrypted file may be corrupted.")
-
     # Read the salt from the separate salt file
     with open(salt_file_path, 'rb') as salt_file:
         salt = salt_file.read()
@@ -90,7 +76,7 @@ def decrypt(password, filename, output_path, salt):
     with open(filename, 'rb') as infile:
         filesize = int(infile.read(16))
         IV = infile.read(16)
-        key = getKey(password, salt)
+        key = getKey(password, salt)  # Use the provided salt during decryption
         decryptor = AES.new(key, AES.MODE_CBC, IV)
 
         with open(outputFile, 'wb') as outfile:
@@ -105,7 +91,6 @@ def decrypt(password, filename, output_path, salt):
             outfile.truncate(filesize)
 
     print("Decryption successful.")
-
 
 def getKey(password, salt, iterations=100000):
     key = PBKDF2(password, salt, dkLen=32, count=iterations)
@@ -226,7 +211,7 @@ def Main():
                 print("Exiting the program.")
                 break
 
-            decrypt(key, filename, output_path, salt) 
+            decrypt(key, filename, output_path) 
 
         elif choice == 'exit':
             print_exit()
