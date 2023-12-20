@@ -5,8 +5,11 @@ from Crypto import Random
 from Crypto.Protocol.KDF import PBKDF2
 
 
-def encrypt(key, filename, output_path):
+def encrypt(password, filename, output_path):
     chunksize = 64 * 1024
+    salt = os.urandom(16)  # Generate a random 16-byte salt
+    key = getKey(password, salt)
+    
     outputFile = os.path.join(output_path, "enc_" + os.path.basename(filename))
     filesize = str(os.path.getsize(filename)).zfill(16)
     IV = Random.new().read(16)
@@ -42,11 +45,18 @@ def encrypt(key, filename, output_path):
     with open(hash_file_path, 'w') as hash_file:
         hash_file.write(hash_obj.hexdigest())
 
-def decrypt(key, filename, output_path):
+    # Write the salt to a separate file
+    salt_file_path = os.path.join(output_path, "enc_" + os.path.basename(filename) + ".salt")
+    with open(salt_file_path, 'wb') as salt_file:
+        salt_file.write(salt)
+
+
+def decrypt(password, filename, output_path):
     chunksize = 64 * 1024
     original_filename = os.path.basename(filename)[4:]  # Remove the "(enc)" prefix
     outputFile = os.path.join(output_path, "dec_" + original_filename.strip())  # Prepend "dec_"
     hash_file_path = os.path.join(output_path, "enc_" + original_filename.strip() + ".hash")
+    salt_file_path = os.path.join(output_path, "enc_" + original_filename.strip() + ".salt")
 
     # Check if the directory exists
     if not os.path.isdir(output_path):
@@ -72,10 +82,15 @@ def decrypt(key, filename, output_path):
     if integrity_hash != stored_hash:
         print("Integrity check failed. The encrypted file may be corrupted.")
 
+    # Read the salt from the separate salt file
+    with open(salt_file_path, 'rb') as salt_file:
+        salt = salt_file.read()
+
     # Proceed with decryption
     with open(filename, 'rb') as infile:
         filesize = int(infile.read(16))
         IV = infile.read(16)
+        key = getKey(password, salt)
         decryptor = AES.new(key, AES.MODE_CBC, IV)
 
         with open(outputFile, 'wb') as outfile:
@@ -89,7 +104,10 @@ def decrypt(key, filename, output_path):
 
             outfile.truncate(filesize)
 
-def getKey(password, salt=b'salt', iterations=100000):
+    print("Decryption successful.")
+
+
+def getKey(password, salt, iterations=100000):
     key = PBKDF2(password.encode('utf-8'), salt, dkLen=32, count=iterations)
     return key
 
@@ -104,9 +122,8 @@ def Main():
             print("Password cannot be empty.")
             password = input("Key: ")
 
-        key = getKey(password)
         output_path = input("Enter the path to save the encrypted file: ")
-        encrypt(key, filename, output_path)
+        encrypt(password, filename, output_path)
     elif choice == 'D':
         filename = input("File to decrypt: ")
         password = input("Key: ")
@@ -114,9 +131,8 @@ def Main():
             print("Password cannot be empty.")
             password = input("Key: ")
 
-        key = getKey(password)
         output_path = input("Enter the path to save the decrypted file: ")
-        decrypt(key, filename, output_path)
+        decrypt(password, filename, output_path)
     else:
         print("No option selected, closing...")
 
