@@ -8,13 +8,14 @@ def encrypt(key, filename, output_path):
     outputFile = os.path.join(output_path, "enc_" + os.path.basename(filename))
     filesize = str(os.path.getsize(filename)).zfill(16)
     IV = Random.new().read(16)
+    salt = Random.new().read(16)
 
     encryptor = AES.new(key, AES.MODE_CBC, IV)
 
     with open(filename, 'rb') as infile:
         with open(outputFile, 'wb') as outfile:
             outfile.write(filesize.encode('utf-8'))
-            outfile.write(IV)
+            outfile.write(salt + IV)
 
             while True:
                 chunk = infile.read(chunksize)
@@ -73,7 +74,9 @@ def decrypt(key, filename, output_path):
     # Proceed with decryption
     with open(filename, 'rb') as infile:
         filesize = int(infile.read(16))
-        IV = infile.read(16)
+        salt_iv = infile.read(32)
+        salt = salt_iv[:16]
+        IV = salt_iv[16:]
         decryptor = AES.new(key, AES.MODE_CBC, IV)
 
         with open(outputFile, 'wb') as outfile:
@@ -87,8 +90,8 @@ def decrypt(key, filename, output_path):
 
             outfile.truncate(filesize)
 
-def getKey(password):
-    hasher = SHA256.new(password.encode('utf-8'))
+def getKey(password, salt=b''):
+    hasher = SHA256.new(salt + password.encode('utf-8'))
     return hasher.digest()
 def print_intro():
     intro = """
