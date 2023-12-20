@@ -51,7 +51,7 @@ def encrypt(password, filename, output_path):
         salt_file.write(salt)
 
 
-def decrypt(password, filename, output_path):
+def decrypt(password, filename, output_path, salt):
     chunksize = 64 * 1024
     original_filename = os.path.basename(filename)[4:]  # Remove the "(enc)" prefix
     outputFile = os.path.join(output_path, "dec_" + original_filename.strip())  # Prepend "dec_"
@@ -108,7 +108,7 @@ def decrypt(password, filename, output_path):
 
 
 def getKey(password, salt, iterations=100000):
-    key = PBKDF2(password.encode('utf-8'), salt, dkLen=32, count=iterations)
+    key = PBKDF2(password, salt, dkLen=32, count=iterations)
     return key
 
 def print_intro():
@@ -192,7 +192,10 @@ def Main():
                 print("Password cannot be empty.")
                 password = input("Key: ")
 
-            key = getKey(password)
+            # Generate a random salt
+            salt = os.urandom(16)
+
+            key = getKey(password, salt)
             output_path = input("Enter the path to save the encrypted file: ")
             if output_path.lower() == 'exit':
                 print_exit()
@@ -213,14 +216,17 @@ def Main():
                 print("Password cannot be empty.")
                 password = input("Key: ")
 
-            key = getKey(password)
+            # Generate a random salt
+            salt = os.urandom(16)
+
+            key = getKey(password, salt)
             output_path = input("Enter the path to save the decrypted file: ")
             if output_path.lower() == 'exit':
                 print_exit()
                 print("Exiting the program.")
                 break
 
-            decrypt(key, filename, output_path)
+            decrypt(key, filename, output_path, salt) 
 
         elif choice == 'exit':
             print_exit()
@@ -232,4 +238,3 @@ def Main():
 
 if __name__ == "__main__":
     Main()
-
